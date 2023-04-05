@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2016",        
+    "module": "CommonJS",             /* Specify what module code is generated. */
+    "moduleResolution": "node", 
+    "baseUrl": "./", 
+    // "paths": {
+    //   "@styles*": ["src/styles/*"],
+    //   "@components*": ["src/components/*"],
+    // },                  
+    "resolveJsonModule": true,        /* Enable importing .json files. */
+    "sourceMap": true,                /* Create source map files for emitted JavaScript files. */
+    "outDir": "./dist",               /* Specify an output folder for all emitted files. */
+    "noEmit": false,                  /* Disable emitting files from a compilation. */
+    "isolatedModules": true,         
+    "esModuleInterop": true,        
+    "forceConsistentCasingInFileNames": true,   /* Ensure that casing is correct in imports. */
+    /* Type Checking */
+    "strict": true,                   /* Enable all strict type-checking options. */
+    "noImplicitAny": true,          
+    "noImplicitReturns": true,              
+    "skipLibCheck": true              /* Skip type checking all .d.ts files. */
+  },
+  "include": ["**/*.ts", "app/**/*", "types/*.d.ts"],
+  "exclude": ["node_modules", "app/**/*.spec.ts"]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "app-enchufevirtual",
+  "version": "1.0.0",
+  "description": "Radio Manager - Enchufe Virtual",
+  "main": "./app/index.ts",
+  "scripts": {
+    "tsc": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec ts-node ./app/index.ts",
+    "build": "tsc",
+    "migrations:generate": "sequelize-cli migration:generate --name",
+    "migrations:run": "sequelize-cli db:migrate"
+  },
+  "keywords": [
+    "TYPESCRIPT",
+    "NODE",
+    "EXPRESS"
+  ],
+  "author": "chendodev",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "express": "^4.18.2",
+    "joi": "^17.9.1",
+    "mariadb": "^3.1.1",
+    "mysql2": "^3.2.0",
+    "sequelize": "^6.30.0",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "dotenv": "^16.0.3",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.7",
+    "sequelize-cli": "^6.6.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.3"
+  }
+}
