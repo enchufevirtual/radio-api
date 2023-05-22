@@ -10,7 +10,7 @@ interface Options {
 }
 
 const options: Options = {
-  dialect: 'mariadb',
+  dialect: 'mysql',
   logging: config.isProd ? false : function (str: string) {
     console.log(str)
   }
