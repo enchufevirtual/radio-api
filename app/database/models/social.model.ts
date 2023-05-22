@@ -1,6 +1,6 @@
-const { Model, DataTypes } = require("sequelize");
-
-const SOCIAL_TABLE = 'social';
+import { Model, Sequelize, DataTypes } from "sequelize";
+import { SOCIAL_TABLE, USER_TABLE } from "./constants";
+import { Models, SocialModel } from "types/types";
 
 const SocialSchema = {
   id: {
@@ -21,6 +21,17 @@ const SocialSchema = {
   instagram: {
     type: DataTypes.STRING
   },
+  userId: {
+    field: 'user_id',
+    allowNull: true,
+    type: DataTypes.INTEGER,
+    references: {
+      model: USER_TABLE,
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
+  },
   createAt: {
     allowNull: false,
     type: DataTypes.DATE,
@@ -29,19 +40,15 @@ const SocialSchema = {
   }
 }
 
-class Social extends Model {
+class Social extends Model<SocialModel> {
 
-  static associate(models) {
-    this.hasOne(models.Admin, {
-      as: 'admin',
-      foreignKey: "socialId"
-    });
-    this.hasOne(models.User, {
+  static associate(models: Models) {
+    this.belongsTo(models.User, {
       as: 'user',
-      foreignKey: "socialId"
+      foreignKey: "userId"
     })
   }
-  static config(sequelize) {
+  static config(sequelize: Sequelize) {
     return {
       sequelize,
       tableName: SOCIAL_TABLE,
@@ -51,4 +58,4 @@ class Social extends Model {
   }
 }
 
-module.exports = { SOCIAL_TABLE, SocialSchema, Social }
+export { SOCIAL_TABLE, SocialSchema, Social }

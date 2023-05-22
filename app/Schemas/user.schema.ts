@@ -7,13 +7,13 @@ const password = Joi.string();
 const description = Joi.string().min(10);
 const role = Joi.string().min(5);
 
-const socialMedia = Joi.object({
+const social = Joi.object({
   facebook: Joi.string().min(15).max(50),
   twitter: Joi.string().min(15).max(50),
   instagram: Joi.string().min(15).max(50),
   github: Joi.string().min(15).max(50),
 });
-const image = Joi.string().uri();
+const image = Joi.string().regex(/.(jpg|jpeg|png|gif)$/);
 
 const getUserSchema = Joi.object({ id: id.required() });
 
@@ -23,12 +23,25 @@ const createUserSchema = Joi.object({
   password: password.required(),
   description: description,
   role: role,
-  socialMedia: socialMedia,
+  social: social,
+  image: image
+}).options({ stripUnknown: true });
+
+const createRestrictedUserSchema = Joi.object({
+  name: createUserSchema.extract('name'),
+  email: createUserSchema.extract('email'),
+  password: createUserSchema.extract('password'),
+  description: createUserSchema.extract('description'),
+  social: createUserSchema.extract('social'),
+  image: createUserSchema.extract('image'),
+}).unknown(false);
+
+const updateUserDataSchema = Joi.object({
+  name: name,
+  email: email,
+  description: description,
+  social: social,
   image: image
 });
-const updateUserDataSchema = Joi.object({
-  email: email,
-  role: role
-});
 
-export { getUserSchema, createUserSchema, updateUserDataSchema };
+export { getUserSchema, createRestrictedUserSchema, updateUserDataSchema };
