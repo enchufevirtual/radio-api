@@ -31,7 +31,7 @@ export const resetPassword = async (data: EmailRegisterData ): Promise<void> => 
         <p>Hola ${name},</p>
         <p>Recibimos una solicitud para restablecer tu contraseña en Radio Enchufe Virtual. Haz clic en el botón de abajo para establecer una nueva contraseña:</p>
         <div style="text-align: center;">
-          <a href="${process.env.FRONTEND_URL}/#/password-reset/${token}" style="display: inline-block; padding: 12px 24px; background-color: #2196F3; color: #fff; border-radius: 4px; text-decoration: none;">Restablecer mi contraseña</a>
+          <a href="${process.env.FRONTEND_URL}/password-reset/${token}" style="display: inline-block; padding: 12px 24px; background-color: #2196F3; color: #fff; border-radius: 4px; text-decoration: none;">Restablecer mi contraseña</a>
         </div>
         <p>Si no solicitaste este cambio, por favor ignora este mensaje.</p>
         <br>

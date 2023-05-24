@@ -30,7 +30,7 @@ export const emailRegister = async (data: EmailRegisterData ): Promise<void> => 
         <p>Hola ${name},</p>
         <p>Gracias por registrarte en Radio Enchufe Virtual. Para activar tu cuenta, por favor haz clic en el botón de abajo:</p>
         <div style="text-align: center;">
-          <a href="${process.env.FRONTEND_URL}/#/confirm/${token}" style="display: inline-block; padding: 12px 24px; background-color: #2196F3; color: #fff; border-radius: 4px; text-decoration: none;">Activar mi cuenta</a>
+          <a href="${process.env.FRONTEND_URL}/confirm/${token}" style="display: inline-block; padding: 12px 24px; background-color: #2196F3; color: #fff; border-radius: 4px; text-decoration: none;">Activar mi cuenta</a>
         </div>
         <p>Si no creaste esta cuenta, por favor ignora este mensaje.</p>
         <br>
