@@ -112,6 +112,7 @@ class UserService {
       name,
       email,
       password: hashedPassword,
+      token: generateId(),
       image: image ? image.filename : null
     }, {
       include: ['social']

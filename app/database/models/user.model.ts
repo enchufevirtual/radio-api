@@ -1,7 +1,6 @@
 import { Model, Sequelize, DataTypes } from "sequelize";
 import { USER_TABLE } from "./constants";
 import { UserCreationAttributes, Models, UserAttributes } from "types/types";
-import { generateId } from "../../helpers/generateId";
 
 const UserSchema = {
   id: {
@@ -37,7 +36,6 @@ const UserSchema = {
   },
   token: {
     type: DataTypes.STRING,
-    defaultValue: generateId()
   },  
   confirm: {
     type: DataTypes.STRING,
