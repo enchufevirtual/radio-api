@@ -7,9 +7,9 @@ import fs from 'fs';
 import cors from 'cors';
 import { routerApi } from './enchufevirtual';
 import { errorHandler, boomErrorHandler, multerError } from './middlewares/error.handler';
-import { corsOptions } from './middlewares/cors';
 import { setupSocketIO } from './middlewares/setupSocketIO';
 import { upload } from './middlewares/upload';
+import { corsOptions } from './middlewares/cors';
 
 const app: Application = express();
 app.use(express.json());

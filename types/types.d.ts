@@ -104,7 +104,3 @@ export interface Errors {
   message: string,
   name: string,
 }
-
-export type CorsOptions = {
-  origin: (origin: string | undefined, callback: (error: Error | null, allow?: boolean) => void) => void;
-};

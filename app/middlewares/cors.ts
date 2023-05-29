@@ -1,13 +1,17 @@
-import { CorsOptions } from "types/types";
+import { CorsOptions } from "cors";
 
 const whiteList = [process.env.FRONTEND_URL];
 
 export const corsOptions: CorsOptions = {
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     if (origin && whiteList.indexOf(origin) !== -1) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(null, false)
+      callback(null, false);
     }
-  }
-}
+  },
+  methods: ['GET', 'PUT', 'POST',],
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  credentials: true, //Credentials are cookies, authorization headers or TLS client certificates.
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept']
+};
