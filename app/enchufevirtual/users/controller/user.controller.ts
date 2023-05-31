@@ -2,6 +2,7 @@ import { Request, Response, NextFunction as Next } from "express";
 import { UserService } from "../services/user.service";
 import { generateJWT } from "../../..//helpers/generateJWT";
 import { RequestWithUser } from "types/types";
+import { getExistingImages } from "../../../helpers/getExistingImages";
 
 const service = new UserService();
 
@@ -26,7 +27,15 @@ const getUser = async (req: Request, res: Response, next: Next) => {
 
 const profile = async (req: RequestWithUser, res: Response) => {
   const { userAuth } = req;
-  res.json(userAuth);
+  try {
+    const existingImages = await getExistingImages() as string[];
+    if (!existingImages.includes(userAuth.image)) {
+      userAuth.image = null;
+    }
+    res.json(userAuth);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener las imágenes existentes' });
+  }
 }
 
 const confirmUser = async (req: Request, res: Response, next: Next) => {

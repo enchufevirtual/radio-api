@@ -104,3 +104,11 @@ export interface Errors {
   message: string,
   name: string,
 }
+
+export interface ClientMessageData {
+  body: string;
+  userId: number;
+  from: string;
+  image: string;
+  createAt: Date;
+}

@@ -14,7 +14,7 @@ import {
   checkTokenUser,
   profile 
 } from '../controller/user.controller';
-import { getUserSchema } from "../../../Schemas/user.schema";
+import { getUserSchema, createUserSchema } from "../../../Schemas/user.schema";
 import { validatorHandler } from "../../../middlewares/validator.handler";
 import { checkAuth } from "../../../middlewares/checkAuth";
 import { checkRoleAuth } from "../../../middlewares/checkRoleAuth";
@@ -26,7 +26,7 @@ const router = express.Router();
 router
 .route('/')
 .get(checkAuth, getUsers)
-.post(createImage, createUser);
+.post(validatorHandler(createUserSchema, 'params'), createImage, createUser);
 
 router.get('/confirm/:token', confirmUser);  
 router.post('/login', authenticateUser);  
@@ -39,7 +39,7 @@ router
 .get(checkTokenUser)
 .post(newPasswordUser);
 
-router.put('/update-password', checkAuth, updateUserPassword)  
+router.put('/update-password', checkAuth, updateUserPassword);  
 router
   .route('/:id')
   .get(validatorHandler(getUserSchema, 'params'), checkAuth, getUser)

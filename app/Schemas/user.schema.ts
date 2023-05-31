@@ -18,23 +18,13 @@ const image = Joi.string().regex(/.(jpg|jpeg|png|gif)$/);
 const getUserSchema = Joi.object({ id: id.required() });
 
 const createUserSchema = Joi.object({
-  name: name.required(),
-  email: email.required(),
-  password: password.required(),
+  name: name,
+  email: email,
+  password: password,
   description: description,
   role: role,
-  social: social,
   image: image
-}).options({ stripUnknown: true });
-
-const createRestrictedUserSchema = Joi.object({
-  name: createUserSchema.extract('name'),
-  email: createUserSchema.extract('email'),
-  password: createUserSchema.extract('password'),
-  description: createUserSchema.extract('description'),
-  social: createUserSchema.extract('social'),
-  image: createUserSchema.extract('image'),
-}).unknown(false);
+});
 
 const updateUserDataSchema = Joi.object({
   name: name,
@@ -44,4 +34,4 @@ const updateUserDataSchema = Joi.object({
   image: image
 });
 
-export { getUserSchema, createRestrictedUserSchema, updateUserDataSchema };
+export { getUserSchema, createUserSchema, updateUserDataSchema };

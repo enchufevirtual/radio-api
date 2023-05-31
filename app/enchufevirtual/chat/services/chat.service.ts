@@ -27,10 +27,10 @@ class ChatService {
           message.user.image = null;
         }
       }
+      return userMessages;
     } catch (err) {
       throw boom.badImplementation('Error al obtener las imágenes existentes');
     }
-    return userMessages;
   }
   async create({message, userId}) {
 
