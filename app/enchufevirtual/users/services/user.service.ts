@@ -8,6 +8,7 @@ import { auth } from "../../../helpers/auth";
 import { resetPassword } from "../../../helpers/resetPassword";
 import { emailRegister } from "../../../helpers/emailRegister";
 import { UpdateData } from "../../../../types/types";
+import { getExistingImages } from "../../../helpers/getExistingImages";
 
 const socialService = new SocialService();
 
@@ -129,6 +130,7 @@ class UserService {
     if (data.image) {
       imageFile = data.image.filename;
     }
+
     const user = await this.findById(data.id);
 
     if (Number(user.id) !== Number(data.authId)) {
@@ -147,8 +149,15 @@ class UserService {
       social: JSON.parse(data.social)
     };
     if (imageFile) {
+      const existingImages = await getExistingImages() as string[];
+      if (!existingImages.includes(imageFile)) {
+        imageFile = '';
+      }
+      userData['image'] = imageFile;
+    } else {
       userData['image'] = imageFile;
     }
+   
     const rta = await user.update(userData);
     if (data.social) {
       await socialService.update(Number(data.id), JSON.parse(data.social));
