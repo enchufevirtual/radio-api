@@ -1,5 +1,6 @@
 import boom from "@hapi/boom";
 import { sequelize } from "../../../libs/sequelize";
+import { getExistingImages } from "../../../helpers/getExistingImages";
 
 class ChatService {
 
@@ -15,19 +16,28 @@ class ChatService {
         {
           model: sequelize.models.User,
           as: 'user',
-          attributes: { exclude: ['password', 'token', 'confirm', 'role', 'createAt', 'description', 'email', 'image'] },
+          attributes: { exclude: ['password', 'token', 'confirm', 'role', 'createAt', 'description', 'email'] },
         },
       ],
-    })
+    });
+    try {
+      const existingImages = await getExistingImages() as string[];
+      for (const message of userMessages) {
+        if (!existingImages.includes(message.user.image)) {
+          message.user.image = null;
+        }
+      }
+    } catch (err) {
+      throw boom.badImplementation('Error al obtener las imágenes existentes');
+    }
     return userMessages;
   }
-
-  async create({username, message, image, userId}) {
+  async create({message, userId}) {
 
     const userExists = await sequelize.models.User.findByPk(userId);
 
     if ( userExists ) {
-      const newMessage = await this.chat.create({username, message, image, userId});
+      const newMessage = await this.chat.create({message, userId});
       return newMessage
     } else {
       throw boom.notFound('Hubo error al crear mensaje');
@@ -35,11 +45,11 @@ class ChatService {
     
   }
 
-  async update(data) {
+  async update() {
 
   }
 
-  async delete(id: number | string, authId: number | string, ) {
+  async delete() {
 
   }
 }

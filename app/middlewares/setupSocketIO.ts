@@ -15,13 +15,11 @@ export const setupSocketIO = (server) => {
 
       try {
         await chatService.create({
-          username: data.from,
           message: data.body,
-          image: data.image,
           userId: data.userId 
         });
       } catch (error) {
-        throw new Error('Hubo un error al enviar el mensaje')
+        throw new Error('Hubo un error al guardar el mensaje')
       }
       socket.broadcast.emit('server:message', {
         body: data.body,
