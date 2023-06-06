@@ -3,11 +3,11 @@ const { config } = require("../config/config.js");
 module.exports = {
   development: {
     url: config.dbUrl,
-    dialect: 'mariadb'
+    dialect: 'mysql'
   },
   production: {
     url: config.dbUrl,
-    dialect: 'mariadb',
+    dialect: 'mysql',
     dialectOptions: {
 			ssl: {
 				rejectUnauthorized: false
