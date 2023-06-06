@@ -1,6 +1,5 @@
 import Joi from 'joi';
 
-const id = Joi.number().integer();
 const name = Joi.string().min(5).max(15);
 const email = Joi.string().email();
 const password = Joi.string();
@@ -15,7 +14,7 @@ const social = Joi.object({
 });
 const image = Joi.string().regex(/.(jpg|jpeg|png|gif)$/);
 
-const getUserSchema = Joi.object({ id: id.required() });
+const getUserSchema = Joi.object({ username: Joi.string() });
 
 const createUserSchema = Joi.object({
   name: name,

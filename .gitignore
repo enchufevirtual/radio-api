@@ -78,6 +78,7 @@ $RECYCLE.BIN/
 #node
 node_modules/
 .env
+.env.backup
 #mysql db
 dbdata/
 

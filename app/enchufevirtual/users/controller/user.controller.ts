@@ -17,11 +17,11 @@ const getUsers = async (req: Request, res: Response, next: Next) => {
 
 const getUser = async (req: Request, res: Response, next: Next) => {
   try {
-    const { id } = req.params;
-    const user = await service.findById(id);
-    res.json(user)
+    const { username } = req.params;
+    const user = await service.findUser(username);
+    res.json(user);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
@@ -115,9 +115,9 @@ const updateUser = async (req: RequestWithUser, res: Response, next: Next) => {
     const { id } = req.params;
     const { userAuth } = req;
     const image = req.file
-    const { name, email, description, social } = req.body;
+    const { name, username, email, description, social } = req.body;
     
-    const newData = await service.update({id, authId: userAuth.id, name, email, description, social, image});
+    const newData = await service.update({id, authId: userAuth.id, name, username, email, description, social, image});
     res.json(newData);
   } catch (error) {
     next(error);

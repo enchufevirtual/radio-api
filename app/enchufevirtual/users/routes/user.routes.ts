@@ -1,7 +1,6 @@
 import express from "express";
 
 import { 
-  getUsers, 
   createUser, 
   updateUser, 
   deleteUser, 
@@ -25,14 +24,13 @@ const router = express.Router();
 // Public
 router
 .route('/')
-.get(checkAuth, getUsers)
 .post(validatorHandler(createUserSchema, 'params'), createImage, createUser);
 
 router.get('/confirm/:token', confirmUser);  
 router.post('/login', authenticateUser);  
 
 // Private
-router.get('/profile', checkAuth, checkRoleAuth(['user', 'admin']), profile);
+router.get('/profile/', checkAuth, checkRoleAuth(['user', 'admin']), profile);
 router.post('/identify', forgetPasswordUser);
 router
 .route('/identify/:token')
@@ -42,8 +40,8 @@ router
 router.put('/update-password', checkAuth, updateUserPassword);  
 router
   .route('/:id')
-  .get(validatorHandler(getUserSchema, 'params'), checkAuth, getUser)
   .put(checkAuth, createImage, updateUser)
-  .delete(checkAuth, deleteUser)  
+  .delete(checkAuth, deleteUser) 
+router.get('/:username', validatorHandler(getUserSchema, 'params'), checkAuth, getUser)   
 
 export default router;

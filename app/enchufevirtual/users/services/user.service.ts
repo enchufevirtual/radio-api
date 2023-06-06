@@ -44,9 +44,22 @@ class UserService {
     return user;
   }
 
-  async findOneProperty(property: Record<string, string>) {
-    const propertyFound = await this.user.findOne({ where: property });
+  async findOneProperty(property: Record<string, string | number>) {
+    const propertyFound = await this.user.findOne({ where: property, include: ['social'] });
     return propertyFound || null;
+  }
+  async findUser(username: string | number) {
+    const strUsername = String(username);
+  
+    if (!isNaN(Number(strUsername))) {
+      const user = await this.findById(Number(strUsername));
+      if (user) return user;
+    }
+    
+    const user = await this.findOneProperty({ username: strUsername });
+    if (user) return user;
+  
+    throw boom.notFound('User Not Found');
   }
 
   async confirm(token: string) {
@@ -139,15 +152,25 @@ class UserService {
     if (data.email && user.email !== data.email) {
       const userExists = await this.findOneProperty({email: data.email});
       if (userExists) throw boom.conflict('Este correo ya está registrado');
-      return;
     }
-
+ 
     const userData = {
       name: data.name,
       email: data.email,
       description: data.description,
       social: JSON.parse(data.social)
     };
+
+    if (data.username && user.username !== data.username) {
+      const username = await this.findOneProperty({username: data.username});
+      if (!username) {
+        userData['username'] = data.username
+      } else {
+        userData['username'] = username
+        throw boom.conflict('Este nombre de usuario no está disponible.');
+      }
+    }
+
     if (imageFile) {
       const existingImages = await getExistingImages() as string[];
       if (!existingImages.includes(imageFile)) {

@@ -86,6 +86,7 @@ export interface UpdateData {
   id: number | string,
   authId: number | string,
   name?: string,
+  username?: string,
   email?: string,
   description?: string,
   social: string
@@ -110,5 +111,6 @@ export interface ClientMessageData {
   userId: number;
   from: string;
   image: string;
+  name: string,
   createAt: Date;
 }

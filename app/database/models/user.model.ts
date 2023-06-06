@@ -29,6 +29,10 @@ const UserSchema = {
     type: DataTypes.STRING,
     allowNull: true
   },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   role: {
     allowNull: false,
     type: DataTypes.STRING,

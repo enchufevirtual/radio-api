@@ -11,8 +11,9 @@ const boomErrorHandler = (
   if(Boom.isBoom(err)) {
     const { output } = err;
     res.status(output.statusCode).json(output.payload);
+  } else {
+    next(err);
   }
-  next(err);
 }
 
 const errorHandler = (
@@ -23,8 +24,9 @@ const errorHandler = (
 ) => {
   if(!Boom.isBoom(err)) {
     res.status(500).json({message: err.message})
+  } else {
+    next();
   }
-  next();
 }
 
 const multerError = (

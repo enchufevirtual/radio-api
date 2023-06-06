@@ -27,7 +27,9 @@ export const setupSocketIO = (server: http.Server) => {
         socket.broadcast.emit('server:message', {
           body: data.body,
           from: data.from,
+          name: data.name,
           image: data.image,
+          userId: data.userId, 
           createAt: data.createAt
         });
       } catch (error) {
