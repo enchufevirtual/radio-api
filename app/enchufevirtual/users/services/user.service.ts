@@ -53,11 +53,23 @@ class UserService {
   
     if (!isNaN(Number(strUsername))) {
       const user = await this.findById(Number(strUsername));
-      if (user) return user;
+      if (user) {
+        const existingImages = await getExistingImages() as string[];
+        if (!existingImages.includes(user.image)) {
+          user.image = '';
+        }
+        return user;
+      }  
     }
     
     const user = await this.findOneProperty({ username: strUsername });
-    if (user) return user;
+    if (user) {
+      const existingImages = await getExistingImages() as string[];
+      if (!existingImages.includes(user.image)) {
+        user.image = '';
+      }
+      return user;
+    }  
   
     throw boom.notFound('User Not Found');
   }
