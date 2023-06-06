@@ -188,10 +188,10 @@ class UserService {
       if (!existingImages.includes(imageFile)) {
         imageFile = '';
       }
-      userData['image'] = imageFile;
     } else {
-      userData['image'] = imageFile;
+      imageFile = user.image; // Keep the user's existing image
     }
+    userData['image'] = imageFile;
    
     const rta = await user.update(userData);
     if (data.social) {
