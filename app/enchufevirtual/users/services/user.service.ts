@@ -157,6 +157,7 @@ class UserService {
     }
 
     const user = await this.findById(data.id);
+    console.log(user)
 
     if (Number(user.id) !== Number(data.authId)) {
       throw boom.notFound('Esta acción no está permitida');
@@ -183,14 +184,19 @@ class UserService {
       }
     }
 
-    if (imageFile) {
+    if (!imageFile) {
+      const existingImages = await getExistingImages() as string[];
+      if (!existingImages.includes(user.image)) {
+        imageFile = '';
+      } else {
+        imageFile = user.image // Keep the user's existing image
+      }
+    } else {
       const existingImages = await getExistingImages() as string[];
       if (!existingImages.includes(imageFile)) {
         imageFile = '';
       }
-    } else {
-      imageFile = user.image; // Keep the user's existing image
-    }
+    }  
     userData['image'] = imageFile;
    
     const rta = await user.update(userData);
