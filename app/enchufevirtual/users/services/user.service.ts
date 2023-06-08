@@ -157,7 +157,6 @@ class UserService {
     }
 
     const user = await this.findById(data.id);
-    console.log(user)
 
     if (Number(user.id) !== Number(data.authId)) {
       throw boom.notFound('Esta acción no está permitida');

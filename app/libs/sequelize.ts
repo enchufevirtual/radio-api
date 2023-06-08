@@ -9,6 +9,9 @@ interface Options {
   dialectOptions?: DefaultSetOptions
 }
 
+// in this case I am using mysql in production if you use another database you must change it here in dialect, example dialect: 'postgres'
+
+// if you mount the containers with the docker file, I'm using mariadb for development so you must change it here example dialect: 'mariadb'
 const options: Options = {
   dialect: 'mysql',
   logging: config.isProd ? false : function (str: string) {
