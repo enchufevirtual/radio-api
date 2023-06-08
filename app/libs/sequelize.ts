@@ -13,7 +13,7 @@ interface Options {
 
 // if you mount the containers with the docker file, I'm using mariadb for development so you must change it here example dialect: 'mariadb'
 const options: Options = {
-  dialect: 'mysql',
+  dialect: 'mariadb',
   logging: config.isProd ? false : function (str: string) {
     console.log(str)
   }
