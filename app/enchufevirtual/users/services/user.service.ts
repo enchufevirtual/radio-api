@@ -50,7 +50,7 @@ class UserService {
   }
   async findUser(username: string | number) {
     const strUsername = String(username);
-  
+
     if (!isNaN(Number(strUsername))) {
       const user = await this.findById(Number(strUsername));
       if (user) {

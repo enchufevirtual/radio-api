@@ -82,5 +82,7 @@ node_modules/
 backup.sql
 #mysql db
 dbdata/
+#API txt
+API.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux
