@@ -1,6 +1,6 @@
 import express from "express";
 import { getPosts, createPost } from "../controller/post.controller";
-import { createNameAudio } from "../../../../app/middlewares/createNameAudio";
+import { createNameAudio } from "../../../middlewares/createNameAudio";
 
 const router = express.Router();
 
