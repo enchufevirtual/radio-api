@@ -18,7 +18,7 @@ class RadioService {
       this.radio = { title: response.data.title };
       return this.radio;
     } catch (err) {
-      throw boom.notFound('Error al obtener la mùsica actual');
+      throw boom.notFound('Error al obtener la música actual');
     }
   }
 

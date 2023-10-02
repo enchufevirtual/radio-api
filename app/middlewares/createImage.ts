@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction as Next, Request, Response } from 'express';
-import fs from 'fs';
+import fs from 'node:fs';
 import sharp from 'sharp';
-import path from 'path';
+import path from 'node:path';
 
 const UPLOADS_DIR = path.resolve(__dirname, '..', 'public', 'uploads');
 

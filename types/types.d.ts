@@ -2,6 +2,8 @@ import { Request } from 'express';
 import { Social } from '../app/database/models/social.model';
 import { User } from '../app/database/models/user.model';
 import { Chat } from '../app/database/models/chat.model';
+import { Post } from '../app/database/models/post.model';
+import { Comment } from '../app/database/models/comment.model';
 import { Optional, DataTypes } from 'sequelize';
 
 export interface UserAttributes {
@@ -28,6 +30,8 @@ export interface Models {
   User: typeof User;
   Social: typeof Social;
   Chat: typeof Chat;
+  Post: typeof Post;
+  Comment: typeof Comment;
 }
 
 interface SocialModel {
@@ -47,6 +51,36 @@ interface SocialModel {
     type: DataTypes.STRING
   },
   instagram: {
+    type: DataTypes.STRING
+  }
+}
+
+interface PostModel {
+  id: {
+    allowNull: boolean,
+    autoIncrement: boolean,
+    primaryKey: boolean,
+    type: DataTypes.INTEGER,
+  },
+  image: {
+    type: DataTypes.STRING
+  },
+  audio: {
+    type: DataTypes.STRING
+  },
+  content: {
+    type: DataTypes.STRING
+  }
+}
+
+interface CommentModel {
+  id: {
+    allowNull: boolean,
+    autoIncrement: boolean,
+    primaryKey: boolean,
+    type: DataTypes.INTEGER,
+  },
+  comment: {
     type: DataTypes.STRING
   }
 }
@@ -82,6 +116,10 @@ export interface Data {
   role?: string
 }
 
+export type Files = {
+  [fieldname: string]: Express.Multer.File[];
+} | Express.Multer.File[] | undefined 
+
 export interface UpdateData {
   id: number | string,
   authId: number | string,
@@ -90,7 +128,7 @@ export interface UpdateData {
   email?: string,
   description?: string,
   social: string
-  image?: Express.Multer.File
+  file?: Files
 }
 
 export interface Errors {
@@ -113,4 +151,9 @@ export interface ClientMessageData {
   image: string;
   name: string,
   createAt: Date;
+}
+
+export interface QueryParams {
+  limit?: number;
+  offset?: number;
 }

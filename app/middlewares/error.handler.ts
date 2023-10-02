@@ -36,7 +36,7 @@ const multerError = (
   next: Next
 ) => {
   if(err.name === 'MulterError') {
-    res.status(500).json({type: 'image', message: 'El archivo excede el límite - (MAX 10MB)'})
+    res.status(413).json({type: 'image', message: 'El archivo excede el límite - (MAX 10MB)'})
   } else if (err) {
     res.status(500).json({ error: 'Internal server error' });
   } else {

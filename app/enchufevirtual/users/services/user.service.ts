@@ -9,6 +9,7 @@ import { resetPassword } from "../../../helpers/resetPassword";
 import { emailRegister } from "../../../helpers/emailRegister";
 import { UpdateData } from "../../../../types/types";
 import { getExistingImages } from "../../../helpers/getExistingImages";
+import { arrayFiles } from "./../../../../app/helpers/arrayFiles";
 
 const socialService = new SocialService();
 
@@ -129,13 +130,16 @@ class UserService {
     await user.save();
   }
 
-  async create({name, email, password, image}) {
+  async create({username, email, password, image}) {
     const hashedPassword = await hashPassword(password);
     const userExists = await this.findOneProperty({email});
+    const userNameExists = await this.findOneProperty({username});
 
+    if (userNameExists) throw boom.conflict(`${username} ya está registrado`);
     if (userExists) throw boom.conflict('Este correo ya está registrado');
     const newUser = await this.user.create({
-      name,
+      name: username,
+      username: username.toLowerCase(),
       email,
       password: hashedPassword,
       token: generateId(),
@@ -145,17 +149,17 @@ class UserService {
     })
     const { token } = newUser;
     // verify email account
-    emailRegister({name, email, token})
+    emailRegister({name: username, email, token})
     return newUser;
   }
 
   async update(data: UpdateData) {
 
     let imageFile = '';
-    if (data.image) {
-      imageFile = data.image.filename;
+    if (data.file) {
+      const { image } = arrayFiles(data.file)
+      imageFile = image;
     }
-
     const user = await this.findById(data.id);
 
     if (Number(user.id) !== Number(data.authId)) {

@@ -100,10 +100,10 @@ const newPasswordUser = async (req: RequestWithUser , res: Response, next: Next)
 
 const createUser = async (req: Request, res: Response, next: Next) => {
   try {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
     const image = req.file;
 
-    const newUser = await service.create({name, email, password, image});
+    const newUser = await service.create({username, email, password, image});
     res.status(201).json(newUser);
   } catch (error) {
     next(error)
@@ -114,10 +114,10 @@ const updateUser = async (req: RequestWithUser, res: Response, next: Next) => {
   try {
     const { id } = req.params;
     const { userAuth } = req;
-    const image = req.file
+    const file = req.files;
     const { name, username, email, description, social } = req.body;
     
-    const newData = await service.update({id, authId: userAuth.id, name, username, email, description, social, image});
+    const newData = await service.update({id, authId: userAuth.id, name, username, email, description, social, file});
     res.json(newData);
   } catch (error) {
     next(error);

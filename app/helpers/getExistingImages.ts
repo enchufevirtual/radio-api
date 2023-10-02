@@ -1,7 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const imageFolder = path.resolve(__dirname, '../public/uploads');
+
 
 export function getExistingImages() {
   return new Promise((resolve, reject) => {

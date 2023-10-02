@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -12,6 +12,7 @@ import { upload } from './middlewares/upload';
 import { corsOptions } from './middlewares/cors';
 
 const app: Application = express();
+app.disable("x-powered-by");
 app.use(express.json());
 dotenv.config();
 
@@ -33,6 +34,10 @@ app.use(upload);
 
 // Router Api Enchufe Virtual
 routerApi(app);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((req: Request, res: Response) => {
+  res.status(400).send("400 - Enchufe Virtual - API - Bad Request");
+})
 
 // Errors
 app.use(boomErrorHandler);

@@ -63,6 +63,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
     this.hasOne(models.Chat, {
       as: 'chat',
       foreignKey: 'userId'
+    })
+    this.hasMany(models.Post, {
+      as: 'posts',
+      foreignKey: 'userId'
     }) 
   }
   static config(sequelize: Sequelize) {

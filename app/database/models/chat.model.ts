@@ -10,7 +10,7 @@ const ChatSchema = {
     type: DataTypes.INTEGER,
   },
   message: {
-    type: DataTypes.STRING
+    type: DataTypes.TEXT
   },
   image: {
     type: DataTypes.STRING
