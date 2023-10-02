@@ -1,7 +1,7 @@
 // import boom from "@hapi/boom";
 import { FindOptions } from "sequelize";
 import { QueryParams } from "types/types";
-import { arrayFiles } from "../../../../app/helpers/arrayFiles";
+import { arrayFiles } from "../../../helpers/arrayFiles";
 import { sequelize } from "../../../libs/sequelize";
 
 

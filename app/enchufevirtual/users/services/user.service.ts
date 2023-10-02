@@ -9,7 +9,7 @@ import { resetPassword } from "../../../helpers/resetPassword";
 import { emailRegister } from "../../../helpers/emailRegister";
 import { UpdateData } from "../../../../types/types";
 import { getExistingImages } from "../../../helpers/getExistingImages";
-import { arrayFiles } from "./../../../../app/helpers/arrayFiles";
+import { arrayFiles } from "../../../helpers/arrayFiles";
 
 const socialService = new SocialService();
 
