@@ -24,7 +24,7 @@ const router = express.Router();
 // Public
 router
 .route('/')
-.post(validatorHandler(createUserSchema, 'params'), createImage, createUser);
+.post(validatorHandler(createUserSchema, 'body'), createImage, createUser);
 
 router.get('/confirm/:token', confirmUser);  
 router.post('/login', authenticateUser);  

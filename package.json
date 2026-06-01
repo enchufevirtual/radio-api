@@ -16,7 +16,7 @@
     "NODE",
     "EXPRESS"
   ],
-  "author": "chendodev",
+  "author": "soychendo",
   "license": "ISC",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
@@ -37,7 +37,9 @@
     "sharp": "^0.32.0",
     "socket.io": "^4.6.1",
     "sqlite3": "^5.1.6",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "dompurify": "^3.0.4",
+    "jsdom": "^22.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

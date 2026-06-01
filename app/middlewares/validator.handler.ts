@@ -8,7 +8,7 @@ const validatorHandler = (schema: ObjectSchema, property: keyof Request) => {
     const data = req[property];
     const { error } = schema.validate(data, { abortEarly: false });
     if(error) {
-      next(boom.badRequest(error.details[0].message));
+      return next(boom.badRequest(error.details[0].message));
     }
     next();
   }

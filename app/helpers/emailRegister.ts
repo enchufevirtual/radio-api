@@ -41,8 +41,8 @@ export const emailRegister = async (data: EmailRegisterData ): Promise<void> => 
         <p>¡Que tengas un gran día!</p>
         <p>El equipo de Radio Enchufe Virtual</p>
         <p><b>Desarrollador:</b></p>
-        <p>Chendo Dev - Jorge Del Pezo</p>
-        <p><a href="mailto:chendodev@gmail.com">contacto</a></p>
+        <p>Soy Chendo - Jorge Del Pezo</p>
+        <p><a href="mailto:chendoec@gmail.com">contacto</a></p>
       </div>
     `
   });

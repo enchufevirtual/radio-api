@@ -7,11 +7,16 @@ import path from 'node:path';
 const UPLOADS_DIR = path.resolve(__dirname, '..', 'public', 'uploads');
 
 export const createImage = (req: Request, res: Response, next: Next) => {
-  
-  if (!req.file) return next();
+  const request = req as Request & {
+    file?: Express.Multer.File;
+    files?: { [fieldname: string]: Express.Multer.File[] };
+  };
+  const file = request.file ?? request.files?.image?.[0];
 
-  if (!req.file.mimetype.startsWith('image/')) {
-    fs.unlink(req.file.path, (err) => {
+  if (!file) return next();
+
+  if (!file.mimetype.startsWith('image/')) {
+    fs.unlink(file.path, (err) => {
 
       if (err) return next(err);
 
@@ -20,7 +25,7 @@ export const createImage = (req: Request, res: Response, next: Next) => {
     return;
   }
 
-  const { originalname, path: filePath } = req.file;
+  const { originalname, path: filePath } = file;
   const resizedFilename = `ev-${originalname}`;
   const image = path.resolve(UPLOADS_DIR, resizedFilename);
 
@@ -40,7 +45,11 @@ export const createImage = (req: Request, res: Response, next: Next) => {
 
         if (existsImage) await fs.promises.rename(image, existsImagePath);
 
-        req.file!.filename = resizedFilename;
+        file.filename = resizedFilename;
+        request.file = file;
+        if (request.files?.image?.length) {
+          request.files.image[0] = file;
+        }
         
         return next();
 

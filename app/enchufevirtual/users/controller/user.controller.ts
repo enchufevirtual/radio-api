@@ -101,7 +101,8 @@ const newPasswordUser = async (req: RequestWithUser , res: Response, next: Next)
 const createUser = async (req: Request, res: Response, next: Next) => {
   try {
     const { username, email, password } = req.body;
-    const image = req.file;
+    const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+    const image = files?.image?.[0] ?? (req as any).file;
 
     const newUser = await service.create({username, email, password, image});
     res.status(201).json(newUser);

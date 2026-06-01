@@ -85,4 +85,4 @@ npm run build
 ```
 
 ✅ Social Media: @enchufevirtual
-📨 Contact me - <chendodev@gmail.com>
+📨 Contact me - <chendoec@gmail.com>
