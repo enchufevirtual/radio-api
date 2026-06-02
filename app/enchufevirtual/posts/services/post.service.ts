@@ -2,6 +2,7 @@
 import { FindOptions } from "sequelize";
 import { QueryParams } from "types/types";
 import { arrayFiles } from "../../../helpers/arrayFiles";
+import { sanitizeText } from "../../../helpers/sanitizeText";
 import { sequelize } from "../../../libs/sequelize";
 
 
@@ -52,11 +53,11 @@ class PostService {
   }
 
   async create({content, files, userId}) {
-    
+    const sanitizedContent = sanitizeText(content ?? '', 1000);
     const { image, audio, nameAudio } = arrayFiles(files);
 
     const createPost = await this.post.create({
-      content, 
+      content: sanitizedContent,
       image: image ?? "",
       audio: audio ?? "",
       nameAudio: nameAudio ?? "", 

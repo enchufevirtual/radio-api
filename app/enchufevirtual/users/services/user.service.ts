@@ -114,8 +114,14 @@ class UserService {
     await user.save();
 
     const { name, email, token } = user;
-    // send email to reset password
-    resetPassword({name, email, token})
+
+    try {
+      await resetPassword({name, email, token});
+    } catch (error) {
+      user.token = null;
+      await user.save();
+      throw error;
+    }
   }
   async checkToken(token: string) {
     const existsToken = await this.findOneProperty({token});
@@ -146,10 +152,17 @@ class UserService {
       image: image ? image.filename : null
     }, {
       include: ['social']
-    })
+    });
+
     const { token } = newUser;
-    // verify email account
-    emailRegister({name: username, email, token})
+
+    try {
+      await emailRegister({name: username, email, token});
+    } catch (error) {
+      await newUser.destroy();
+      throw error;
+    }
+
     return newUser;
   }
 

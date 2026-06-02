@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
+import 'dotenv/config';
 import express, { Application, Request, Response } from 'express';
 import http from 'http';
-import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import cors from 'cors';
@@ -14,7 +14,6 @@ import { corsOptions } from './middlewares/cors';
 const app: Application = express();
 app.disable("x-powered-by");
 app.use(express.json());
-dotenv.config();
 
 app.use(cors(corsOptions));
 // Web Sockets - socket.io
@@ -45,9 +44,9 @@ app.use(multerError)
 app.use(errorHandler);
 
 // Server
-const PORT = process.env.PORT || 4000;
+const PORT = parseInt(process.env.PORT || '4000', 10);
 
-server.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
+server.listen(PORT, '0.0.0.0', () => {
+  const url = `http://0.0.0.0:${PORT}`;
   console.log(`\x1b[31mListen in the port:\x1b[0m ${url}`);
 })
