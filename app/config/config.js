@@ -5,22 +5,32 @@ dotenv.config();
 const {
   DB_USER,
   DB_PASSWORD,
-  DB_HOST,
-  DB_PORT,
   DB_NAME,
   DATABASE_URL
 } = process.env;
 
-const constructedDbUrl =
-  DB_USER && DB_HOST && DB_NAME
-    ? `mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT || 3306}/${DB_NAME}`
-    : null;
+const DB_HOST = 'mariadb.railway.internal';
+const DB_PORT = 3306;
+
+const dbUser = DB_USER || 'root';
+const dbPassword = DB_PASSWORD || '';
+const dbName = DB_NAME || 'railway';
+
+console.log('[config] DB_HOST:', DB_HOST);
+console.log('[config] DB_PORT:', DB_PORT);
+console.log('[config] DB_USER:', dbUser);
+console.log('[config] DB_NAME:', dbName);
+console.log('[config] DATABASE_URL present:', !!DATABASE_URL);
+
+const constructedDbUrl = `mysql://${dbUser}:${dbPassword}@${DB_HOST}:${DB_PORT}/${dbName}`;
+
+console.log('[config] constructedDbUrl:', constructedDbUrl);
 
 const config = {
   env: process.env.NODE_ENV || 'development',
   isProd: process.env.NODE_ENV === 'production',
   port: process.env.PORT || 3000,
-  dbUrl: constructedDbUrl || DATABASE_URL || '',
+  dbUrl: DATABASE_URL || constructedDbUrl,
   jwtSecret: process.env.JWT_SECRET || ''
 }
 
