@@ -37,7 +37,34 @@ class PostService {
 
     // const totalCount = await this.post.count();
 
-    const posts = await this.post.findAll(options);
+    console.log('[PostService.find] Executing findAll with options:', JSON.stringify({
+      include: options.include?.map((inc: any) => ({
+        model: inc.model?.name ?? inc.model,
+        as: inc.as,
+        attributes: inc.attributes,
+      })),
+      order: options.order,
+      limit: options.limit,
+    }));
+
+    let posts;
+    try {
+      posts = await this.post.findAll(options);
+    } catch (error) {
+      const err = error as Error & { name?: string; parent?: Error; sql?: string };
+      console.error('[PostService.find] findAll query failed', {
+        errorName: err.name,
+        errorMessage: err.message,
+        // Underlying DB driver error (e.g. ER_NO_SUCH_TABLE, ER_BAD_FIELD_ERROR)
+        parentError: err.parent?.message,
+        // Raw SQL Sequelize attempted to run
+        sql: err.sql,
+        stack: err.stack,
+      });
+      throw error;
+    }
+
+    console.log(`[PostService.find] Query succeeded — returned ${posts.length} post(s)`);
 
     // const hasMoreResults = totalCount > (Number(offset) + posts.length);
     return { posts };
