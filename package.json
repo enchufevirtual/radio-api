@@ -9,7 +9,8 @@
     "dev": "nodemon --exec ts-node ./app/index.ts",
     "build": "tsc",
     "migrations:generate": "sequelize-cli migration:generate --name",
-    "migrations:run": "sequelize-cli db:migrate"
+    "migrations:run": "sequelize-cli db:migrate",
+    "start:prod": "npm run migrations:run && npm run start"
   },
   "keywords": [
     "TYPESCRIPT",
