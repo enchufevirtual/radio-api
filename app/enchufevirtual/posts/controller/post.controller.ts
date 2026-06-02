@@ -10,6 +10,21 @@ const getPosts = async (req: Request, res: Response, next: Next) => {
     const posts = await postService.find(req.query);
     res.json(posts);
   } catch (error) {
+    const err = error as Error & { name?: string; parent?: Error; sql?: string; errors?: Array<{ message: string; type: string }> };
+    console.error('[getPosts] Failed to fetch posts', {
+      method: req.method,
+      path: req.path,
+      query: req.query,
+      errorName: err.name,
+      errorMessage: err.message,
+      // Sequelize wraps the original DB error — log it for connection/query issues
+      parentError: err.parent?.message,
+      // Log the raw SQL that failed, if Sequelize provides it
+      sql: err.sql,
+      // Sequelize ValidationError carries a per-field errors array
+      validationErrors: err.errors,
+      stack: err.stack,
+    });
     next(error);
   }
 }
