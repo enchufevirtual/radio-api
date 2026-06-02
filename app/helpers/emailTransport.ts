@@ -18,14 +18,39 @@ const emailPass = process.env.EMAIL_PASS?.trim() ?? '';
 const emailFrom = process.env.EMAIL_FROM?.trim() || 'Radio Enchufe Virtual <no-reply@enchufevirtual.com>';
 const frontendUrl = process.env.FRONTEND_URL?.trim() ?? '';
 
-if (!emailHost || !emailPort || !emailUser || !emailPass || !frontendUrl) {
-  throw new Error(
-    'Missing required email configuration. Please set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS and FRONTEND_URL.'
-  );
+// Log the status of each email environment variable to aid debugging
+console.log('[emailTransport] Checking email environment variables:');
+console.log(`  EMAIL_HOST      : ${emailHost      ? `"${emailHost}"`      : 'NOT SET'}`);
+console.log(`  EMAIL_PORT      : ${emailPort      ? emailPort             : 'NOT SET'}`);
+console.log(`  EMAIL_USER      : ${emailUser      ? `"${emailUser}"`      : 'NOT SET'}`);
+console.log(`  EMAIL_PASS      : ${emailPass      ? '(set)'               : 'NOT SET'}`);
+console.log(`  FRONTEND_URL    : ${frontendUrl    ? `"${frontendUrl}"`    : 'NOT SET'}`);
+
+const missingVars: string[] = [];
+if (!emailHost)    missingVars.push('EMAIL_HOST');
+if (!emailPort)    missingVars.push('EMAIL_PORT');
+if (!emailUser)    missingVars.push('EMAIL_USER');
+if (!emailPass)    missingVars.push('EMAIL_PASS');
+if (!frontendUrl)  missingVars.push('FRONTEND_URL');
+
+const frontendUrlValid = frontendUrl ? /^https?:\/\//i.test(frontendUrl) : false;
+if (frontendUrl && !frontendUrlValid) {
+  missingVars.push('FRONTEND_URL (must start with http:// or https://)');
 }
 
-if (!/^https?:\/\//i.test(frontendUrl)) {
-  throw new Error('FRONTEND_URL must include http:// or https://');
+/**
+ * `true` when all required email variables are present and valid.
+ * Consumers should check this flag before attempting to send email.
+ */
+export const emailConfigured: boolean = missingVars.length === 0;
+
+if (!emailConfigured) {
+  console.warn(
+    `[emailTransport] Email is DISABLED. Missing or invalid variables: ${missingVars.join(', ')}. ` +
+    'The app will start normally but email features will not work until these are set.'
+  );
+} else {
+  console.log('[emailTransport] All email variables present — email is ENABLED.');
 }
 
 export const emailConfig: EmailConfig = {
@@ -34,20 +59,26 @@ export const emailConfig: EmailConfig = {
   user: emailUser,
   pass: emailPass,
   from: emailFrom,
-  frontendUrl: frontendUrl.replace(/\/+$/, ''),
+  frontendUrl: frontendUrl ? frontendUrl.replace(/\/+$/, '') : '',
   secure: process.env.EMAIL_SECURE === 'true' || emailPort === 465,
   rejectUnauthorized: process.env.EMAIL_TLS_REJECT_UNAUTHORIZED !== 'false'
 };
 
-export const transporter: Transporter = nodemailer.createTransport({
-  host: emailConfig.host,
-  port: emailConfig.port,
-  secure: emailConfig.secure,
-  auth: {
-    user: emailConfig.user,
-    pass: emailConfig.pass
-  },
-  tls: {
-    rejectUnauthorized: emailConfig.rejectUnauthorized
-  }
-});
+/**
+ * Nodemailer transporter, or `null` when email is not configured.
+ * Always check `emailConfigured` before using this.
+ */
+export const transporter: Transporter | null = emailConfigured
+  ? nodemailer.createTransport({
+      host: emailConfig.host,
+      port: emailConfig.port,
+      secure: emailConfig.secure,
+      auth: {
+        user: emailConfig.user,
+        pass: emailConfig.pass
+      },
+      tls: {
+        rejectUnauthorized: emailConfig.rejectUnauthorized
+      }
+    })
+  : null;

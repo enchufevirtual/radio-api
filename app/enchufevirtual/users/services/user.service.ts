@@ -7,6 +7,7 @@ import { Status } from "./types";
 import { auth } from "../../../helpers/auth";
 import { resetPassword } from "../../../helpers/resetPassword";
 import { emailRegister } from "../../../helpers/emailRegister";
+import { emailConfigured } from "../../../helpers/emailTransport";
 import { UpdateData } from "../../../../types/types";
 import { getExistingImages } from "../../../helpers/getExistingImages";
 import { arrayFiles } from "../../../helpers/arrayFiles";
@@ -110,6 +111,13 @@ class UserService {
     const user = await this.findOneProperty({email: verifyEmail});
     
     if (!user) throw boom.notFound('Este usuario no existe');
+
+    if (!emailConfigured) {
+      throw boom.serverUnavailable(
+        'El servicio de correo no está disponible en este momento. Por favor, contacta al administrador.'
+      );
+    }
+
     user.token = generateId();
     await user.save();
 
@@ -156,11 +164,18 @@ class UserService {
 
     const { token } = newUser;
 
-    try {
-      await emailRegister({name: username, email, token});
-    } catch (error) {
-      await newUser.destroy();
-      throw error;
+    if (!emailConfigured) {
+      console.warn(
+        `[UserService.create] Email is not configured — skipping confirmation email for "${email}". ` +
+        'The account was created but will remain unconfirmed until email is available.'
+      );
+    } else {
+      try {
+        await emailRegister({name: username, email, token});
+      } catch (error) {
+        await newUser.destroy();
+        throw error;
+      }
     }
 
     return newUser;

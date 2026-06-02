@@ -1,5 +1,5 @@
 import Boom from '@hapi/boom';
-import { emailConfig, transporter } from './emailTransport';
+import { emailConfig, emailConfigured, transporter } from './emailTransport';
 
 interface EmailRegisterData {
   email: string;
@@ -21,6 +21,13 @@ const escapeHtml = (value: string): string => {
 };
 
 export const emailRegister = async (data: EmailRegisterData): Promise<void> => {
+  if (!emailConfigured || !transporter) {
+    console.warn('[emailRegister] Email is not configured — registration confirmation email was not sent.');
+    throw Boom.serverUnavailable(
+      'El servicio de correo no está disponible en este momento. Por favor, contacta al administrador.'
+    );
+  }
+
   const { email, name, token } = data;
   const safeName = escapeHtml(name);
   const confirmationUrl = `${emailConfig.frontendUrl}/confirm/${encodeURIComponent(token)}`;
