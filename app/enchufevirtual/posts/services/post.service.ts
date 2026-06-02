@@ -38,11 +38,13 @@ class PostService {
     // const totalCount = await this.post.count();
 
     console.log('[PostService.find] Executing findAll with options:', JSON.stringify({
-      include: options.include?.map((inc: any) => ({
-        model: inc.model?.name ?? inc.model,
-        as: inc.as,
-        attributes: inc.attributes,
-      })),
+      include: Array.isArray(options.include)
+        ? options.include.map((inc: any) => ({
+            model: inc.model?.name ?? inc.model,
+            as: inc.as,
+            attributes: inc.attributes,
+          }))
+        : options.include,
       order: options.order,
       limit: options.limit,
     }));
