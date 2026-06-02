@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
+import 'dotenv/config';
 import express, { Application, Request, Response } from 'express';
 import http from 'http';
-import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import cors from 'cors';
@@ -14,7 +14,6 @@ import { corsOptions } from './middlewares/cors';
 const app: Application = express();
 app.disable("x-powered-by");
 app.use(express.json());
-dotenv.config();
 
 app.use(cors(corsOptions));
 // Web Sockets - socket.io

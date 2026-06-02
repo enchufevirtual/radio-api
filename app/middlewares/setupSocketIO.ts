@@ -136,6 +136,10 @@ export const setupSocketIO = (server: http.Server) => {
     });
 
     // Handle user disconnect
+    socket.on('chat:get-users-online', () => {
+      socket.emit('chat:users-online', { count: connectedUsers.size });
+    });
+
     socket.on('disconnect', () => {
       connectedUsers.delete(socket.id);
       const usersOnlineCount = connectedUsers.size;
