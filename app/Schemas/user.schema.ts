@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const name = Joi.string().min(5).max(15);
+const username = Joi.string().min(5).max(15);
 const email = Joi.string().email();
 const password = Joi.string();
 const description = Joi.string().min(10);
@@ -17,16 +17,19 @@ const image = Joi.string().regex(/.(jpg|jpeg|png|gif)$/);
 const getUserSchema = Joi.object({ username: Joi.string() });
 
 const createUserSchema = Joi.object({
-  name: name,
-  email: email,
-  password: password,
-  description: description,
-  role: role,
-  image: image
+  username: username.required(),
+  email: email.required(),
+  password: password.required(),
+  repetir_password: Joi.string().valid(Joi.ref('password')).messages({
+    'any.only': 'Las contraseñas no coinciden'
+  }),
+  description: description.optional(),
+  role: role.optional(),
+  image: image.optional()
 });
 
 const updateUserDataSchema = Joi.object({
-  name: name,
+  name: Joi.string().min(5).max(15),
   email: email,
   description: description,
   social: social,

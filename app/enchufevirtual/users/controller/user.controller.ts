@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction as Next } from "express";
+import boom from "@hapi/boom";
 import { UserService } from "../services/user.service";
 import { generateJWT } from "../../..//helpers/generateJWT";
 import { RequestWithUser } from "types/types";
@@ -100,7 +101,12 @@ const newPasswordUser = async (req: RequestWithUser , res: Response, next: Next)
 
 const createUser = async (req: Request, res: Response, next: Next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, repetir_password } = req.body;
+
+    if (repetir_password !== undefined && password !== repetir_password) {
+      return next(boom.badRequest('Las contraseñas no coinciden'));
+    }
+
     const files = req.files as Record<string, Express.Multer.File[]> | undefined;
     const image = files?.image?.[0] ?? (req as any).file;
 
