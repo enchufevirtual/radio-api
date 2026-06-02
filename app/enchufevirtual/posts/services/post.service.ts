@@ -19,10 +19,6 @@ class PostService {
     const options: FindOptions =  {
       include: [
         {
-          model: sequelize.models.Comment,
-          as: 'comments',
-        },
-        {
           model: sequelize.models.User,
           as: 'user',
           attributes: ['image', 'name', 'username']
