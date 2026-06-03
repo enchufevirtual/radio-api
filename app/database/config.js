@@ -1,19 +1,43 @@
-const { config } = require("../config/config.js");
+const { config } = require('../config/config.js');
 
-// here you must also change to the database that you are using both in development or production example dialect: 'mariadb'
+const buildDialectOptions = () => {
+  if (config.dbDialect === 'mssql') {
+    return {
+      options: {
+        encrypt: config.dbEncrypt ?? true,
+        trustServerCertificate: config.dbTrustServerCertificate ?? true
+      }
+    };
+  }
+
+  return {};
+};
+
+const buildConfig = () => {
+  if (config.dbHost) {
+    return {
+      dialect: config.dbDialect,
+      host: config.dbHost,
+      port: config.dbPort,
+      username: config.dbUser,
+      password: config.dbPassword,
+      database: config.dbName,
+      dialectOptions: buildDialectOptions()
+    };
+  }
+
+  if (config.dbUrl) {
+    return {
+      url: config.dbUrl,
+      dialect: config.dbDialect,
+      dialectOptions: buildDialectOptions()
+    };
+  }
+
+  throw new Error('Missing database connection settings. Set DB_HOST/db variables or DATABASE_URL.');
+};
 
 module.exports = {
-  development: {
-    url: config.dbUrl,
-    dialect: 'mariadb'
-  },
-  production: {
-    url: config.dbUrl,
-    dialect: 'mariadb',
-    dialectOptions: {
-			ssl: {
-				rejectUnauthorized: false
-			}
-		}
-  }
-}
+  development: buildConfig(),
+  production: buildConfig()
+};

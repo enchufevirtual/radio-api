@@ -1,10 +1,10 @@
 import Joi from 'joi';
 
-const name = Joi.string().min(5).max(15);
+const username = Joi.string().min(3).max(15);
+const name = Joi.string().min(3).max(30);
 const email = Joi.string().email();
 const password = Joi.string();
 const description = Joi.string().min(10);
-const role = Joi.string().min(5);
 
 const social = Joi.object({
   facebook: Joi.string().min(15).max(50),
@@ -17,12 +17,11 @@ const image = Joi.string().regex(/.(jpg|jpeg|png|gif)$/);
 const getUserSchema = Joi.object({ username: Joi.string() });
 
 const createUserSchema = Joi.object({
-  name: name,
-  email: email,
-  password: password,
-  description: description,
-  role: role,
-  image: image
+  username: username.required(),
+  name: name.optional(),
+  email: email.required(),
+  password: password.required(),
+  image: image.optional().allow('', null)
 });
 
 const updateUserDataSchema = Joi.object({

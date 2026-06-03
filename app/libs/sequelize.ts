@@ -1,33 +1,54 @@
 /* eslint-disable no-console */
-import { Sequelize, Dialect, DefaultSetOptions } from "sequelize";
-import { config } from "../config";
-import { setupModels } from "../database/models";
+import { Sequelize, Dialect } from 'sequelize';
+import { config } from '../config';
+import { setupModels } from '../database/models';
 
 interface Options {
-  dialect: Dialect,
-  logging: boolean | ((str: string) => void)
-  dialectOptions?: DefaultSetOptions
+  dialect: Dialect;
+  logging: boolean | ((str: string) => void);
+  dialectOptions?: Record<string, unknown>;
 }
 
-// in this case I am using mysql in production if you use another database you must change it here in dialect, example dialect: 'postgres'
-
-// if you mount the containers with the docker file, I'm using mariadb for development so you must change it here example dialect: 'mariadb'
 const options: Options = {
-  dialect: 'mariadb',
-  logging: config.isProd ? false : function (str: string) {
-    console.log(str)
+  dialect: config.dbDialect as Dialect,
+  logging: config.isProd ? false : (str: string) => {
+    console.log(str);
   }
+};
+
+const getDialectOptions = () => {
+  if (config.dbDialect === 'mssql') {
+    return {
+      options: {
+        encrypt: config.dbEncrypt,
+        trustServerCertificate: config.dbTrustServerCertificate
+      }
+    };
+  }
+
+  return {};
+};
+
+if (!config.dbUrl && !config.dbHost) {
+  throw new Error('DATABASE_URL or DB_HOST must be provided');
 }
 
-if(config.isProd) {
-  options.dialectOptions = {
-    ssl: {
-      rejectUnauthorized: false
-    }
-  }
-}
+const sequelize = config.dbHost
+  ? new Sequelize({
+      dialect: config.dbDialect as Dialect,
+      host: config.dbHost,
+      port: config.dbPort,
+      username: config.dbUser,
+      password: config.dbPassword,
+      database: config.dbName,
+      logging: options.logging,
+      dialectOptions: getDialectOptions()
+    })
+  : new Sequelize(config.dbUrl, {
+      ...options,
+      dialectOptions: getDialectOptions()
+    });
 
-const sequelize = new Sequelize(config.dbUrl, options);
 setupModels(sequelize);
 
 export { sequelize };

@@ -231,7 +231,7 @@ class UserService {
     const userExists = await this.findById(id);
     if (!userExists) throw boom.conflict('Hubo un error');
 
-    const existsPassword = this.findOneProperty({password});
+    const existsPassword = await this.findOneProperty({password});
     if (!existsPassword) throw boom.conflict('El password actual es incorrecto');
 
      // Check Password

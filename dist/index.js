@@ -42,9 +42,9 @@ app.use(error_handler_1.boomErrorHandler);
 app.use(error_handler_1.multerError);
 app.use(error_handler_1.errorHandler);
 // Server
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-    const url = `http://localhost:${PORT}`;
+const PORT = parseInt(process.env.PORT || '4000', 10);
+server.listen(PORT, '0.0.0.0', () => {
+    const url = `http://0.0.0.0:${PORT}`;
     console.log(`\x1b[31mListen in the port:\x1b[0m ${url}`);
 });
 //# sourceMappingURL=index.js.map
