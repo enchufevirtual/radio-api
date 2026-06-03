@@ -115,10 +115,11 @@ exports.newPasswordUser = newPasswordUser;
 const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const { username, email, password } = req.body;
+        const { username, name, email, password } = req.body;
+        const finalUsername = username || name;
         const files = req.files;
         const image = (_b = (_a = files === null || files === void 0 ? void 0 : files.image) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : req.file;
-        const newUser = yield service.create({ username, email, password, image });
+        const newUser = yield service.create({ username: finalUsername, email, password, image });
         res.status(201).json(newUser);
     }
     catch (error) {

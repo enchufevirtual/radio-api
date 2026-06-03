@@ -54,6 +54,6 @@ export const emailRegister = async (data: EmailRegisterData): Promise<void> => {
     });
   } catch (error) {
     console.error('Email registration failed:', error);
-    throw Boom.internal('No se pudo enviar el correo de verificación. Intenta de nuevo más tarde.');
+    throw new Error('No se pudo enviar el correo de verificación. Intenta de nuevo más tarde.');
   }
 };

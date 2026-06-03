@@ -14,6 +14,7 @@ import { corsOptions } from './middlewares/cors';
 const app: Application = express();
 app.disable("x-powered-by");
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors(corsOptions));
 // Web Sockets - socket.io

@@ -143,27 +143,31 @@ class UserService {
 
     if (userNameExists) throw boom.conflict(`${username} ya está registrado`);
     if (userExists) throw boom.conflict('Este correo ya está registrado');
-    const newUser = await this.user.create({
-      name: username,
-      username: username.toLowerCase(),
-      email,
-      password: hashedPassword,
-      token: generateId(),
-      image: image ? image.filename : null
-    }, {
-      include: ['social']
-    });
 
-    const { token } = newUser;
+    const transaction = await sequelize.transaction();
 
     try {
+      const newUser = await this.user.create({
+        name: username,
+        username: username.toLowerCase(),
+        email,
+        password: hashedPassword,
+        token: generateId(),
+        image: image ? image.filename : null
+      }, {
+        include: ['social'],
+        transaction
+      });
+
+      const { token } = newUser;
       await emailRegister({name: username, email, token});
+      await transaction.commit();
+
+      return newUser;
     } catch (error) {
-      await newUser.destroy();
+      await transaction.rollback();
       throw error;
     }
-
-    return newUser;
   }
 
   async update(data: UpdateData) {
@@ -231,7 +235,7 @@ class UserService {
     const userExists = await this.findById(id);
     if (!userExists) throw boom.conflict('Hubo un error');
 
-    const existsPassword = this.findOneProperty({password});
+    const existsPassword = await this.findOneProperty({password});
     if (!existsPassword) throw boom.conflict('El password actual es incorrecto');
 
      // Check Password
