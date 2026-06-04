@@ -35,12 +35,12 @@ class PostService {
       options.limit = Number(limit)
     }
 
-    // const totalCount = await this.post.count();
+    const totalCount = await this.post.count();
 
     const posts = await this.post.findAll(options);
+    const hasMoreResults = totalCount > posts.length;
 
-    // const hasMoreResults = totalCount > (Number(offset) + posts.length);
-    return { posts };
+    return { posts, hasMoreResults };
    
   }
 
