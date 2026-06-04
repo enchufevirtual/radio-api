@@ -88,7 +88,6 @@ export const emitUserImageUpdate = (userId: number, image: string | null) => {
     });
   }
   if (ioServer) {
-    console.log(`[Chat] Broadcasting image update for user ${userId}`);
     ioServer.emit('chat:user-image-updated', { userId, avatarUrl: getAvatarUrl(image, userId, `user${userId}`) });
   }
 };
@@ -122,8 +121,6 @@ export const setupSocketIO = (server: http.Server) => {
   });
   ioServer = io;
 
-  console.log(`[Chat] Socket.io server initialized. CORS origin: ${process.env.FRONTEND_URL}`);
-
   // ============ Authentication Middleware ============
   // Only accept authenticated users with valid JWT
   io.use((socket, next) => {
@@ -140,10 +137,8 @@ export const setupSocketIO = (server: http.Server) => {
       }
 
       socket.data.userId = Number(payload.id);
-      console.debug(`[Chat] JWT verified for user ${socket.data.userId}`);
       return next();
     } catch (err: any) {
-      console.error(`[Chat] Auth failed: ${err.message}`);
       next(new Error(`Auth failed: ${err.message}`));
     }
   });
@@ -176,7 +171,6 @@ export const setupSocketIO = (server: http.Server) => {
         const userIds = Array.from(new Set(history.map((m) => m.userId))).filter(Boolean);
         
         if (userIds.length === 0) {
-          console.debug(`[Chat] Sending empty history to user ${userId}`);
           socket.emit('chat:history', history);
           return;
         }
@@ -194,7 +188,6 @@ export const setupSocketIO = (server: http.Server) => {
         });
 
         const mapped = mapMessagesToUserImages(history, userImages);
-        console.debug(`[Chat] Sending ${mapped.length} history messages to user ${userId}`);
         socket.emit('chat:history', mapped);
       } catch (err) {
         console.error(`[Chat] Error loading history for user ${userId}:`, err);
@@ -215,7 +208,6 @@ export const setupSocketIO = (server: http.Server) => {
 
         // Validate payload
         if (!payload || typeof payload !== 'object') {
-          console.warn(`[Chat] Invalid payload from user ${userId}`);
           socket.emit('chat:error', { message: 'Formato de mensaje inválido.' });
           return;
         }

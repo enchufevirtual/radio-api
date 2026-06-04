@@ -16,33 +16,32 @@ class PostService {
   
   async find(query: QueryParams) {
 
-    const options: FindOptions =  {
-      include: [
-        {
-          model: sequelize.models.Comment,
-          as: 'comments',
-        },
-        {
-          model: sequelize.models.User,
-          as: 'user',
-          attributes: ['image', 'name', 'username']
-        }
-      ],
-      order: [['id', 'DESC']]
-    }
-    const { limit } = query;
-    if (limit) {
-      options.limit = Number(limit)
-    }
+  const { limit = 4, offset = 0 } = query;
 
-    const totalCount = await this.post.count();
+  const totalCount = await this.post.count();
 
-    const posts = await this.post.findAll(options);
-    const hasMoreResults = totalCount > posts.length;
+  const posts = await this.post.findAll({
+    include: [
+      {
+        model: sequelize.models.Comment,
+        as: 'comments',
+      },
+      {
+        model: sequelize.models.User,
+        as: 'user',
+        attributes: ['image', 'name', 'username']
+      }
+    ],
+    order: [['id', 'DESC']],
+    limit: Number(limit),
+    offset: Number(offset),
+  });
 
-    return { posts, hasMoreResults };
-   
-  }
+  return {
+    posts,
+    hasMoreResults: totalCount > Number(offset) + posts.length,
+  };
+}
 
   async findOne({id}) {
 
