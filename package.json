@@ -2,7 +2,7 @@
   "name": "app-enchufevirtual",
   "version": "1.0.0",
   "description": "Radio Manager - Enchufe Virtual",
-  "main": "./app/index.ts",
+  "main": "./dist/app/index.ts",
   "scripts": {
     "tsc": "tsc",
     "start": "node dist/app/index.js",
