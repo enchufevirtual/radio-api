@@ -38,9 +38,10 @@ class PostService {
   });
 
   return {
-    posts,
-    hasMoreResults: totalCount > Number(offset) + posts.length,
-  };
+  posts,
+  hasMoreResults: totalCount > Number(offset) + posts.length,
+  version: "v2-offset-pagination"
+};
 }
 
   async findOne({id}) {
