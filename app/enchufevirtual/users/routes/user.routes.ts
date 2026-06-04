@@ -18,6 +18,7 @@ import { validatorHandler } from "../../../middlewares/validator.handler";
 import { checkAuth } from "../../../middlewares/checkAuth";
 import { checkRoleAuth } from "../../../middlewares/checkRoleAuth";
 import { createImage } from "../../../middlewares/createImage";
+import { transporter } from '../../../helpers/emailTransport';
 
 const router = express.Router();
 
@@ -25,6 +26,17 @@ const router = express.Router();
 router
 .route('/')
 .post(validatorHandler(createUserSchema, 'body'), createImage, createUser);
+
+// Temporary diagnostics endpoint to verify SMTP settings on the server
+router.get('/test-smtp', async (req, res) => {
+  try {
+    await transporter.verify();
+    return res.json({ ok: true, message: 'SMTP transport verified' });
+  } catch (err: any) {
+    console.error('SMTP verify failed:', err);
+    return res.status(500).json({ ok: false, message: 'SMTP verify failed', error: err?.message || String(err) });
+  }
+});
 
 router.get('/confirm/:token', confirmUser);  
 router.post('/login', authenticateUser);  

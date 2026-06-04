@@ -3,6 +3,7 @@ import { UserService } from "../services/user.service";
 import { generateJWT } from "../../..//helpers/generateJWT";
 import { RequestWithUser } from "types/types";
 import { getExistingImages } from "../../../helpers/getExistingImages";
+import { emitUserImageUpdate } from "../../../middlewares/setupSocketIO";
 
 const service = new UserService();
 
@@ -120,6 +121,7 @@ const updateUser = async (req: RequestWithUser, res: Response, next: Next) => {
     const { name, username, email, description, social } = req.body;
     
     const newData = await service.update({id, authId: userAuth.id, name, username, email, description, social, file});
+    emitUserImageUpdate(userAuth.id, newData.image ?? null);
     res.json(newData);
   } catch (error) {
     next(error);
