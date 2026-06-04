@@ -37,11 +37,12 @@ class PostService {
     offset: Number(offset),
   });
 
-  return {
-  posts,
-  hasMoreResults: totalCount > Number(offset) + posts.length,
-  version: "v2-offset-pagination"
-};
+    return {
+    posts,
+    hasMoreResults: totalCount > Number(offset) + posts.length,
+    version: "TEST-2026-06-04-001",
+    timestamp: Date.now()
+  };
 }
 
   async findOne({id}) {
