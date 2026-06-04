@@ -41,7 +41,6 @@ class PostService {
     posts,
     hasMoreResults: totalCount > Number(offset) + posts.length,
     version: "TEST-2026-06-04-001",
-    timestamp: Date.now()
   };
 }
 
