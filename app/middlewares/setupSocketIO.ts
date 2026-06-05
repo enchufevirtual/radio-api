@@ -39,6 +39,9 @@ const userSockets = new Map<number, Set<string>>(); // userId -> socketIds
 const userLastActivity = new Map<number, number>(); // userId -> last activity timestamp
 const socketToUserId = new Map<string, number>(); // socketId -> userId
 
+// === NUEVO: Control de sockets de Invitados (Guarda socket.id de pestañas anónimas) ===
+const guestSockets = new Set<string>();
+
 // Rate limiting token-bucket per user
 type Bucket = { tokens: number; lastRefill: number };
 const rateLimitBuckets = new Map<number, Bucket>();
@@ -100,6 +103,11 @@ export const getUsersOnlineCount = (): number => {
   return userSockets.size;
 };
 
+// === NUEVO: Obtener la cantidad de invitados únicos ===
+export const getGuestsOnlineCount = (): number => {
+  return guestSockets.size;
+};
+
 /**
  * Get detailed info about online users (for debugging)
  */
@@ -152,6 +160,9 @@ export const setupSocketIO = (server: http.Server) => {
       userSockets.set(userId, sockets);
       socketToUserId.set(socket.id, userId);
       userLastActivity.set(userId, Date.now());
+    } else {
+      // === NUEVO: Guardar socket de invitado ===
+      guestSockets.add(socket.id);
     }
 
     const usersOnlineCount = userSockets.size;
@@ -162,7 +173,11 @@ export const setupSocketIO = (server: http.Server) => {
     }
 
     // ============ Broadcast Updated User Count ============
-    io.emit('chat:users-online', { count: usersOnlineCount });
+    // === MODIFICADO: Ahora enviamos ambos contadores en el mismo evento ===
+    io.emit('chat:users-online', { 
+      count: usersOnlineCount,
+      guestsCount: getGuestsOnlineCount()
+    });
     
     // ============ Send Chat History ============
     (async () => {
@@ -295,30 +310,31 @@ export const setupSocketIO = (server: http.Server) => {
     });
 
     // ============ Disconnect Handler ============
+    // === NUEVO/MODIFICADO: Limpieza correcta al desconectarse ===
     socket.on('disconnect', () => {
       if (typeof userId === 'number') {
         const sockets = userSockets.get(userId);
         if (sockets) {
           sockets.delete(socket.id);
           if (sockets.size === 0) {
-            // User completely offline
             userSockets.delete(userId);
             userLastActivity.delete(userId);
             rateLimitBuckets.delete(userId);
-            console.log(`[Chat] User ${userId} fully disconnected. Total authenticated users online: ${userSockets.size}`);
-          } else {
-            // User still has other connections
-            console.log(`[Chat] Connection closed for user ${userId} (${sockets.size} connections remaining)`);
           }
         }
+        socketToUserId.delete(socket.id);
       } else {
-        console.log(`[Chat] Guest disconnected (socketId: ${socket.id})`);
+        // === NUEVO: Eliminar de la lista de invitados ===
+        guestSockets.delete(socket.id);
       }
 
-      socketToUserId.delete(socket.id);
+      // Emitir los nuevos totales actualizados a todos
+      io.emit('chat:users-online', { 
+        count: userSockets.size,
+        guestsCount: guestSockets.size 
+      });
       
-      // Broadcast updated user count
-      io.emit('chat:users-online', { count: userSockets.size });
+      console.log(`[Chat] Socket ${socket.id} disconnected. Users: ${userSockets.size} | Guests: ${guestSockets.size}`);
     });
   });
 
