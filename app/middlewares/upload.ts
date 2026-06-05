@@ -20,13 +20,12 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 // 🔥 RUTA SEGURA (Azure + local)
 const UPLOAD_PATH =
   process.env.UPLOAD_PATH ||
-  path.join(process.cwd(), 'uploads');
+  '/home/site/uploads';
 
 // 🔥 crear carpeta si no existe
 if (!fs.existsSync(UPLOAD_PATH)) {
   fs.mkdirSync(UPLOAD_PATH, { recursive: true });
 }
-
 // 🔥 storage de multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

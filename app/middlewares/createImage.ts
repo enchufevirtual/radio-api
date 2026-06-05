@@ -7,7 +7,7 @@ import path from 'node:path';
 // 🔥 RUTA SEGURA (Azure + local)
 const UPLOADS_DIR =
   process.env.UPLOAD_PATH ||
-  path.join(process.cwd(), 'uploads');
+  '/home/site/uploads';
 
 export const createImage = (req: Request, res: Response, next: Next) => {
   const request = req as Request & {

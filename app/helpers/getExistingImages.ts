@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const UPLOAD_PATH =
   process.env.UPLOAD_PATH ||
-  path.join(process.cwd(), 'uploads');
+  '/home/site/uploads';
 
 const imageFolder = UPLOAD_PATH;
 
