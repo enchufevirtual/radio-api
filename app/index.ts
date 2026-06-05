@@ -2,52 +2,89 @@
 import 'dotenv/config';
 import express, { Application, Request, Response } from 'express';
 import http from 'http';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 import cors from 'cors';
+
 import { routerApi } from './enchufevirtual';
-import { errorHandler, boomErrorHandler, multerError } from './middlewares/error.handler';
+import {
+  errorHandler,
+  boomErrorHandler,
+  multerError
+} from './middlewares/error.handler';
+
 import { setupSocketIO } from './middlewares/setupSocketIO';
 import { upload } from './middlewares/upload';
 import { corsOptions } from './middlewares/cors';
 
 const app: Application = express();
-app.disable("x-powered-by");
+app.disable('x-powered-by');
+
+// ------------------------
+//  BODY PARSERS
+// ------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ------------------------
+//  CORS
+// ------------------------
 app.use(cors(corsOptions));
-// Web Sockets - socket.io
+
+// ------------------------
+//  HTTP SERVER + SOCKETS
+// ------------------------
 const server = http.createServer(app);
 setupSocketIO(server);
 
-//  If not exists folder public/upload / create
-const uploadDirectory = path.join(__dirname, 'public/uploads');
+// ------------------------
+//  UPLOAD DIRECTORY (AZURE SAFE)
+// ------------------------
+const uploadDirectory =
+  process.env.UPLOAD_PATH ||
+  path.join(process.cwd(), 'uploads');
+
+// crear carpeta si no existe
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
-// Dir Public
-app.use(express.static(uploadDirectory));
 
-// Upload File
+// ------------------------
+//  SERVIR ARCHIVOS ESTÁTICOS
+// ------------------------
+app.use('/uploads', express.static(uploadDirectory));
+
+// ------------------------
+//  MULTER (UPLOAD MIDDLEWARE GLOBAL)
+// ------------------------
 app.use(upload);
 
-// Router Api Enchufe Virtual
+// ------------------------
+//  ROUTES
+// ------------------------
 routerApi(app);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((req: Request, res: Response) => {
-  res.status(400).send("400 - Enchufe Virtual - API - Bad Request");
-})
 
-// Errors
+// ------------------------
+// 🔥 404 HANDLER
+// ------------------------
+app.use((req: Request, res: Response) => {
+  res.status(400).send('400 - Enchufe Virtual - API - Bad Request');
+});
+
+// ------------------------
+// 🔥 ERROR HANDLERS (ORDEN IMPORTA)
+// ------------------------
+app.use(multerError);
 app.use(boomErrorHandler);
-app.use(multerError)
 app.use(errorHandler);
 
-// Server
+// ------------------------
+// 🔥 SERVER START
+// ------------------------
 const PORT = parseInt(process.env.PORT || '4000', 10);
 
 server.listen(PORT, '0.0.0.0', () => {
-  const url = `http://0.0.0.0:${PORT}`;
-  console.log(`\x1b[31mListen in the port:\x1b[0m ${url}`);
-})
+  console.log(
+    `\x1b[32mServer running on port:\x1b[0m http://0.0.0.0:${PORT}`
+  );
+});
