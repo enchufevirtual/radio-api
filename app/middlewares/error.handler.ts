@@ -8,12 +8,12 @@ const boomErrorHandler = (
   res: Response,
   next: Next
 ) => {
-  if(Boom.isBoom(err)) {
+  if (Boom.isBoom(err)) {
     const { output } = err;
-    res.status(output.statusCode).json(output.payload);
-  } else {
-    next(err);
+    return res.status(output.statusCode).json(output.payload);
   }
+
+  return next(err);
 }
 
 const errorHandler = (
@@ -22,11 +22,12 @@ const errorHandler = (
   res: Response,
   next: Next
 ) => {
-  if(!Boom.isBoom(err)) {
-    res.status(500).json({message: err.message})
-  } else {
-    next();
+  if (Boom.isBoom(err)) {
+    const { output } = err;
+    return res.status(output.statusCode).json(output.payload);
   }
+
+  return res.status(500).json({ message: err.message || 'Internal server error' });
 }
 
 const multerError = (
@@ -47,7 +48,7 @@ const multerError = (
   }
 
   if (err) {
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(err);
   }
 
   return next();

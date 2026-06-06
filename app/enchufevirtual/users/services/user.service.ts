@@ -94,18 +94,20 @@ class UserService {
 
     let userExists: User | null = null;
     const normalizedUsername = value.toLowerCase();
+    const isEmail = value.includes('@');
 
-    if (value.includes('@')) {
+    if (isEmail) {
       userExists = await this.findOneProperty({ email: value });
-    }
-
-    if (!userExists) {
+      if (!userExists) {
+        throw boom.notFound('El correo no existe');
+      }
+    } else {
       userExists = await this.findOneProperty({ username: normalizedUsername });
+      if (!userExists) {
+        throw boom.notFound('El nombre de usuario es incorrecto');
+      }
     }
 
-    if (!userExists) {
-      throw boom.notFound('Esta cuenta no existe');
-    }
     if (!userExists.confirm) {
       throw boom.notFound('Tu cuenta no ha sido confirmada');
     }
