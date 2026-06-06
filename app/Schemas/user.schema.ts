@@ -16,6 +16,14 @@ const image = Joi.string().regex(/.(jpg|jpeg|png|gif)$/);
 
 const getUserSchema = Joi.object({ username: Joi.string() });
 
+const authUserSchema = Joi.object({
+  email: email,
+  username: username,
+  password: password.required()
+}).or('email', 'username').messages({
+  'object.missing': 'Se requiere email o nombre de usuario.'
+});
+
 const createUserSchema = Joi.object({
   username: username.required(),
   name: name.optional(),
@@ -32,4 +40,4 @@ const updateUserDataSchema = Joi.object({
   image: image
 });
 
-export { getUserSchema, createUserSchema, updateUserDataSchema };
+export { getUserSchema, createUserSchema, updateUserDataSchema, authUserSchema };

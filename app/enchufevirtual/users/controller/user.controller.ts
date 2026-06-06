@@ -51,15 +51,16 @@ const confirmUser = async (req: Request, res: Response, next: Next) => {
 
 const authenticateUser = async (req: Request, res: Response, next: Next) => {
   try {
-    const { email, password } = req.body;
-    const authUser = await service.authenticate(email, password);
+    const { email, username, password } = req.body;
+    const identifier = email || username;
+    const authUser = await service.authenticate(identifier, password);
     res.json({
       id: authUser.id,
       name: authUser.name,
-      email: authUser.email, 
+      email: authUser.email,
       image: authUser.image,
-      token: generateJWT(authUser.id), 
-      role: authUser.role 
+      token: generateJWT(authUser.id),
+      role: authUser.role
     })
   } catch (error) {
     next(error);

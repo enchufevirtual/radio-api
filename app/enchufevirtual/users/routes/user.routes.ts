@@ -13,7 +13,7 @@ import {
   checkTokenUser,
   profile 
 } from '../controller/user.controller';
-import { getUserSchema, createUserSchema } from "../../../Schemas/user.schema";
+import { getUserSchema, createUserSchema, authUserSchema } from "../../../Schemas/user.schema";
 import { validatorHandler } from "../../../middlewares/validator.handler";
 import { checkAuth } from "../../../middlewares/checkAuth";
 import { checkRoleAuth } from "../../../middlewares/checkRoleAuth";
@@ -38,8 +38,8 @@ router.get('/test-smtp', async (req, res) => {
   }
 });
 
-router.get('/confirm/:token', confirmUser);  
-router.post('/login', authenticateUser);  
+router.get('/confirm/:token', confirmUser);
+router.post('/login', validatorHandler(authUserSchema, 'body'), authenticateUser);
 
 // Private
 router.get('/profile/', checkAuth, checkRoleAuth(['user', 'admin']), profile);

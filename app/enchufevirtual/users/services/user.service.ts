@@ -10,6 +10,7 @@ import { emailRegister } from "../../../helpers/emailRegister";
 import { UpdateData } from "../../../../types/types";
 import { getExistingImages } from "../../../helpers/getExistingImages";
 import { arrayFiles } from "../../../helpers/arrayFiles";
+import { User } from "../../../database/models/user.model";
 
 const socialService = new SocialService();
 
@@ -21,10 +22,10 @@ interface NewPasswordTypes {
 
 class UserService {
 
-  private user;
+  private user: typeof User;
 
   constructor () {
-    this.user = sequelize.models.User;
+    this.user = sequelize.models.User as typeof User;
   }
   
   async find() {
@@ -34,7 +35,7 @@ class UserService {
     return users;
   }
 
-  async findById(id: number | string) {
+  async findById(id: number | string): Promise<User> {
     const user = await this.user.findByPk(id, {
       // attributes: { exclude: ['password', 'confirm', 'token'] },
       include: ['social']
@@ -45,7 +46,7 @@ class UserService {
     return user;
   }
 
-  async findOneProperty(property: Record<string, string | number>) {
+  async findOneProperty(property: Record<string, string | number>): Promise<User | null> {
     const propertyFound = await this.user.findOne({ where: property, include: ['social'] });
     return propertyFound || null;
   }
@@ -56,7 +57,8 @@ class UserService {
       const user = await this.findById(Number(strUsername));
       if (user) {
         const existingImages = await getExistingImages() as string[];
-        if (!existingImages.includes(user.image)) {
+        const image = user.image ?? '';
+        if (!existingImages.includes(image)) {
           user.image = '';
         }
         return user;
@@ -66,7 +68,8 @@ class UserService {
     const user = await this.findOneProperty({ username: strUsername });
     if (user) {
       const existingImages = await getExistingImages() as string[];
-      if (!existingImages.includes(user.image)) {
+      const image = user.image ?? '';
+      if (!existingImages.includes(image)) {
         user.image = '';
       }
       return user;
@@ -76,30 +79,38 @@ class UserService {
   }
 
   async confirm(token: string) {
-    try {
-      const userConfirm = await this.findOneProperty({token});
-      userConfirm.token = null;
-      userConfirm.confirm = true;
-      await userConfirm.save()
-    } catch (error) {
-      throw boom.notFound('Este token no es válido');
-    }
+    const userConfirm = await this.findOneProperty({ token });
+    if (!userConfirm) throw boom.notFound('Este token no es válido');
+    userConfirm.token = null;
+    userConfirm.confirm = true;
+    await userConfirm.save();
   }
 
-  async authenticate(email: string, password: string ) {
-    // User Exists
-    const userExists = await this.findOneProperty({email});
-    // User it's not exists
+  async authenticate(identifier: string, password: string ) {
+    const value = String(identifier || '').trim();
+    if (!value) {
+      throw boom.badRequest('El correo o nombre de usuario es requerido');
+    }
+
+    let userExists: User | null = null;
+    const normalizedUsername = value.toLowerCase();
+
+    if (value.includes('@')) {
+      userExists = await this.findOneProperty({ email: value });
+    }
+
+    if (!userExists) {
+      userExists = await this.findOneProperty({ username: normalizedUsername });
+    }
+
     if (!userExists) {
       throw boom.notFound('Esta cuenta no existe');
     }
-    // User is confirmed
-    if (userExists.confirm == Status.PENDING) {
+    if (!userExists.confirm) {
       throw boom.notFound('Tu cuenta no ha sido confirmada');
     }
-    // Check Password
+
     if (await auth(password, userExists.password)) {
-      // Authenticate
       return userExists;
     } else {
       throw boom.notFound('Lo siento, la contraseña que ha ingresado no es correcta.');
@@ -131,6 +142,7 @@ class UserService {
   async newPassword(token: string, password: string) {
     const hashedPassword = await hashPassword(password);
     const user = await this.findOneProperty({token});
+    if (!user) throw boom.notFound('Este token no es válido');
     user.token = null;
     user.password = hashedPassword;
     await user.save();
@@ -159,7 +171,7 @@ class UserService {
         transaction
       });
 
-      const { token } = newUser;
+      const token = newUser.token as string;
       await emailRegister({name: username, email, token});
       await transaction.commit();
 
@@ -195,21 +207,20 @@ class UserService {
     };
 
     if (data.username && user.username !== data.username) {
-      const username = await this.findOneProperty({username: data.username});
-      if (!username) {
-        userData['username'] = data.username
+      const usernameExists = await this.findOneProperty({ username: data.username });
+      if (!usernameExists) {
+        userData['username'] = data.username;
       } else {
-        userData['username'] = username
         throw boom.conflict('Este nombre de usuario no está disponible.');
       }
     }
 
     if (!imageFile) {
       const existingImages = await getExistingImages() as string[];
-      if (!existingImages.includes(user.image)) {
+      if (!existingImages.includes(user.image ?? '')) {
         imageFile = '';
       } else {
-        imageFile = user.image // Keep the user's existing image
+        imageFile = user.image || '' // Keep the user's existing image
       }
     } else {
       const existingImages = await getExistingImages() as string[];

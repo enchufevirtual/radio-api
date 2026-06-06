@@ -9,11 +9,13 @@ import { Optional, DataTypes } from 'sequelize';
 export interface UserAttributes {
   id: number;
   email: string;
+  name: string;
+  username?: string;
   password: string;
-  description: string;
-  image: string;
-  token: string;
-  confirm: boolean
+  description?: string;
+  image?: string | null;
+  token?: string | null;
+  confirm?: boolean;
   social?: {
     facebook?: string;
     twitter?: string;

@@ -53,7 +53,24 @@ const UserSchema = {
   }
 }
 
-class User extends Model<UserAttributes, UserCreationAttributes> {
+class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+  public id!: number;
+  public email!: string;
+  public name!: string;
+  public username?: string;
+  public password!: string;
+  public description?: string;
+  public image?: string | null;
+  public token?: string | null;
+  public confirm?: boolean;
+  public role?: string;
+  public createAt?: Date;
+  public social?: {
+    facebook?: string;
+    twitter?: string;
+    github?: string;
+    instagram?: string;
+  };
 
   static associate(models: Models) {
     this.hasOne(models.Social, {
