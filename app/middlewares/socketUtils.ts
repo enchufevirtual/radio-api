@@ -12,7 +12,7 @@ export interface MsgRecord {
 
 const makeAvatarFallback = (userId: number, username: string) => {
   const seed = encodeURIComponent(`${username || `user${userId}`}-${userId}`);
-  return `https://api.dicebear.com/api/identicon/${seed}.svg?size=40`;
+  return `https://api.dicebear.com/7.x/identicon/svg?seed=${seed}`;
 };
 
 const makeImageUrl = (image: string) => {
