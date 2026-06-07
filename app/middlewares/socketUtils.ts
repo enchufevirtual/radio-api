@@ -16,9 +16,16 @@ const makeAvatarFallback = (userId: number, username: string) => {
 };
 
 const makeImageUrl = (image: string) => {
-  if (!image) return null;
-  if (image.startsWith('http://') || image.startsWith('https://')) return image;
-  return `/${encodeURIComponent(image)}`;
+  const cleaned = image.trim();
+  if (cleaned.length === 0 || ['null', 'undefined'].includes(cleaned.toLowerCase())) {
+    return null;
+  }
+
+  if (/^https?:\/\//.test(cleaned)) return cleaned;
+
+  const segments = cleaned.split('/').map((segment) => encodeURIComponent(segment));
+  const normalized = segments.join('/');
+  return normalized.startsWith('/') ? normalized : `/${normalized}`;
 };
 
 export const getAvatarUrl = (image: string | null, userId: number, username: string) => {
@@ -31,9 +38,12 @@ export const mapMessagesToUserImages = (messages: MsgRecord[], userImages: Recor
     const currentImage = Object.prototype.hasOwnProperty.call(userImages, m.userId)
       ? userImages[m.userId]
       : m.image;
+    const resolvedImage = getAvatarUrl(currentImage ?? null, m.userId, m.username);
+    const userData = (m as any).user;
     return {
       ...m,
-      image: getAvatarUrl(currentImage ?? null, m.userId, m.username),
+      image: resolvedImage,
+      ...(userData ? { user: { ...userData, image: resolvedImage } } : {}),
     };
   });
 };

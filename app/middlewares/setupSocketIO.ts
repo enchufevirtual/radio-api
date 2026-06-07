@@ -17,6 +17,9 @@ interface ChatMessage {
   image: string | null;
   body: string;
   createAt: string;
+  user?: {
+    image?: string | null;
+  } | null;
 }
 
 interface ClientChatPayload {
@@ -84,14 +87,18 @@ const cleanupInterval = setInterval(() => {
 export let ioServer: WebSocketsServer<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap> | null = null;
 
 export const emitUserImageUpdate = (userId: number, image: string | null) => {
+  const avatarUrl = getAvatarUrl(image, userId, `user${userId}`);
   const updatedMessages = messages.filter((message) => message.userId === userId);
   if (updatedMessages.length > 0) {
     updatedMessages.forEach((message) => {
-      message.image = getAvatarUrl(image, message.userId, message.username);
+      message.image = avatarUrl;
+      if (message.user) {
+        message.user.image = avatarUrl;
+      }
     });
   }
   if (ioServer) {
-    ioServer.emit('chat:user-image-updated', { userId, avatarUrl: getAvatarUrl(image, userId, `user${userId}`) });
+    ioServer.emit('chat:user-image-updated', { userId, avatarUrl });
   }
 };
 
